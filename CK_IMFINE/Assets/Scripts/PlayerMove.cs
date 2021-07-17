@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlayerMove : MonoBehaviour
 {
     public GameObject Player;
-    public GameObject CamPivot;
+    public GameObject CamHPivot;
+    public GameObject CamVPivot;
 
     [HideInInspector]
     public float RotHInput;
@@ -26,26 +27,82 @@ public class PlayerMove : MonoBehaviour
     {
         PlayerMovement();
         PlayerRotation();
+
+        Player.transform.eulerAngles = new Vector3(Player.transform.eulerAngles.x, Player.transform.eulerAngles.y, 0);
     }
 
     public void PlayerMovement()
     {
+        Vector3 HMove = Vector3.zero;
+        Vector3 VMove = Vector3.zero;
+        Vector3 OriginPos;
+
+        bool IsHInput = false;
+        bool IsVInput = false;
+
+        OriginPos = Player.transform.localPosition;
+
+        Vector3 HTest = Vector3.zero;
+        Vector3 VTest = Vector3.zero;
+
         if (Mathf.Abs(MoveHInput) > 0.1f)
         {
-            Player.transform.localPosition += Player.transform.right * MoveHInput * Time.deltaTime * 10.0f;
+            IsHInput = true;
+            HMove = Player.transform.localPosition + GameManager.Instance.camManager.DirPivot.transform.right * MoveHInput * Time.deltaTime * 10.0f;
+            HTest = HMove - Player.transform.localPosition;
+            Player.transform.localPosition = HMove;
+
+            //if(MoveHInput > 0)
+            //{
+            //    Player.transform.forward = GameManager.Instance.camManager.CamHPivot.transform.right;
+            //}
+            //else
+            //{
+            //    Player.transform.forward = -GameManager.Instance.camManager.CamHPivot.transform.right;
+            //}
+        }
+        else
+        {
+            IsHInput = false;
         }
 
         if (Mathf.Abs(MoveVInput) > 0.1f)
         {
-            Player.transform.localPosition += Player.transform.forward * MoveVInput * Time.deltaTime * 10.0f;
+            IsVInput = true;
+            VMove = Player.transform.localPosition + GameManager.Instance.camManager.DirPivot.transform.forward * MoveVInput * Time.deltaTime * 10.0f;
+            VTest = VMove - Player.transform.localPosition;
+            Player.transform.localPosition = VMove;
+
+            //if (MoveVInput > 0)
+            //{
+            //    Player.transform.forward = GameManager.Instance.camManager.CamHPivot.transform.forward;
+            //}
+            //else
+            //{
+            //    Player.transform.forward = -GameManager.Instance.camManager.CamHPivot.transform.forward;
+            //}
         }
+        else
+        {
+            IsVInput = false;
+        }
+
+        if(IsHInput || IsVInput)
+        {
+            Vector3 MoveVec = HTest + VTest; //HMove + VMove;
+
+            Player.transform.forward = MoveVec.normalized;
+        }
+        
+
+
     }
 
     public void PlayerRotation()
     {
-        if (CamPivot.transform.eulerAngles.x >= 30.0f && CamPivot.transform.eulerAngles.x <= 340.0f) // 시야범위 바깥
+        if (CamVPivot.transform.eulerAngles.x >= 30.0f && CamVPivot.transform.eulerAngles.x <= 340.0f) // 시야범위 바깥
         {
-            if (CamPivot.transform.eulerAngles.x >= 330.0f)
+            if (CamVPivot.transform.eulerAngles.x >= 330.0f)
             {
                 // value (0,1) 못하게
                 IsUpEndAim = true;
@@ -82,12 +139,12 @@ public class PlayerMove : MonoBehaviour
                 else
                     RotVControl = 0;
             }
-            CamPivot.transform.Rotate(new Vector3(-RotVControl * Time.deltaTime * Sensitivity, 0, 0));
+            CamVPivot.transform.Rotate(new Vector3(-RotVControl * Time.deltaTime * Sensitivity, 0, 0));
         }
 
         if (Mathf.Abs(RotHInput) > 0.1f)
         {
-            Player.transform.Rotate(0, RotHInput * Time.deltaTime * Sensitivity * 3, 0);
+            GameManager.Instance.camManager.DirPivot.transform.Rotate(0, RotHInput * Time.deltaTime * Sensitivity * 3, 0);
         }
     }
 

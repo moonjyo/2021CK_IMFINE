@@ -12,14 +12,13 @@ public class PlayerShot : MonoBehaviour
 
     GameObject CamPivot;
 
-    bool T = false;
     float Times = 0;
 
     float RecoilTimes = 0.1f;
 
     public void Start()
     {
-        CamPivot = PlayerManager.Instance.playerMove.CamPivot;
+        CamPivot = PlayerManager.Instance.playerMove.CamHPivot;
     }
 
     public void Update()
@@ -45,10 +44,9 @@ public class PlayerShot : MonoBehaviour
         {
             Debug.Log(hit.collider.name);
         }
-        //CamPivot.transform.DOLocalRotate(CamPivot.transform.localEulerAngles - new Vector3(5, 0, 0), 0.2f);//.OnComplete(() => CamPivot.transform.DOLocalRotate(CamPivot.transform.localEulerAngles + new Vector3(1, 0, 0), 0.2f));
+
         Times = 0;
         StartCoroutine(VerticalRecoil());        
-        //T = true;
 
 
     }
