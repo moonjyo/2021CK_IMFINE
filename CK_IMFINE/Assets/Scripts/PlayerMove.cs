@@ -87,11 +87,11 @@ public class PlayerMove : MonoBehaviour
             IsVInput = false;
         }
 
-        if(IsHInput || IsVInput)
+        if(IsHInput || IsVInput) // 이동 방향으로 바라보게 하기
         {
-            Vector3 MoveVec = HTest + VTest; //HMove + VMove;
+            Vector3 MoveVec = HTest + VTest;
 
-            Player.transform.forward = MoveVec.normalized;
+            Player.transform.forward = Vector3.Lerp(Player.transform.forward ,MoveVec.normalized, Time.deltaTime*20);
         }
         
 
